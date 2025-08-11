@@ -16,7 +16,7 @@ O ArxVault permite criar, armazenar e gerenciar senhas de forma segura no seu di
 ## Instalação
 1. **Clone o Repositório**:
    ```bash
-   git clone https://github.com/seu-usuario/arxvault.git
+   git clone https://github.com/zmdsec/ArxVault---Gerenciador-de-Senhas-Seguro-no-Navegador
    cd arxvault
 Rode Localmente:
 Use um servidor web local (ex.: Python):
