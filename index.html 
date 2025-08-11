@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- CSP ajustado para desenvolvimento (remova 'unsafe-inline' em produção) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';" />
+  <title>ArxVault - Gerenciador de Senhas Offline</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="app">
+    <header role="banner">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5L12 1zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"></path></svg>
+      <div>
+        <h1>ArxVault</h1>
+        <div class="subtitle">Gerenciador de Senhas Offline. Seus dados ficam seguros e criptografados localmente.</div>
+      </div>
+      <button id="helpBtn" class="btn-secondary" title="Ver instruções de uso" aria-label="Ajuda">Ajuda</button>
+    </header>
+
+    <div class="grid-container">
+      <!-- Coluna Esquerda: Controles -->
+      <div class="card" role="region" aria-label="Controles do Cofre">
+        <div class="form-group">
+          <label for="masterPass">Senha Mestra</label>
+          <div class="input-with-button">
+            <input id="masterPass" type="password" placeholder="Digite sua senha mestra" aria-label="Campo para senha mestra" title="Digite uma senha forte com pelo menos 12 caracteres">
+            <button id="unlockBtn" aria-label="Desbloquear o cofre">Desbloquear</button>
+          </div>
+          <div id="masterPassStrength" class="password-strength-indicator" aria-live="polite"><div></div></div>
+        </div>
+        <div class="btn-group">
+          <button id="lockBtn" class="btn-secondary" aria-label="Bloquear o cofre">Bloquear Cofre</button>
+          <button id="changeMasterBtn" class="btn-secondary" aria-label="Trocar senha mestra">Trocar Senha Mestra</button>
+        </div>
+        
+        <hr>
+
+        <div class="form-group">
+          <label>Gerador de Senhas</label>
+          <div class="input-with-button">
+            <input id="generated" readonly placeholder="Senha segura será gerada aqui..." aria-label="Senha gerada" title="Senha gerada aleatoriamente">
+            <button id="copyGenBtn" class="btn-secondary" aria-label="Copiar senha gerada">Copiar</button>
+          </div>
+          <div class="input-with-button" style="margin-top: 0.75rem;">
+            <input id="genLen" type="number" min="4" max="128" value="20" title="Comprimento da senha (mínimo 4, máximo 128)" aria-label="Comprimento da senha">
+            <button id="genBtn" aria-label="Gerar nova senha">Gerar Nova</button>
+          </div>
+          <div class="checkbox-group" role="group" aria-label="Opções para geração de senha">
+            <label><input id="gUpper" type="checkbox" checked> ABC</label>
+            <label><input id="gLower" type="checkbox" checked> abc</label>
+            <label><input id="gDigits" type="checkbox" checked> 123</label>
+            <label><input id="gSymbols" type="checkbox" checked> #$&</label>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="form-group">
+          <label>Adicionar / Editar Entrada</label>
+          <input id="entryTitle" placeholder="Título (ex: Gmail)" class="form-group" aria-label="Título da entrada" title="Título obrigatório para a entrada">
+          <input id="entryUser" placeholder="Usuário / E-mail" class="form-group" aria-label="Usuário ou e-mail">
+          <input id="entryPass" placeholder="Senha" class="form-group" aria-label="Senha da entrada">
+          <div class="btn-group">
+            <button id="addBtn" aria-label="Adicionar ou salvar entrada">Adicionar Entrada</button>
+            <button id="fillGen" class="btn-secondary" aria-label="Usar senha gerada">Usar Gerada</button>
+            <button id="clearBtn" class="btn-secondary" aria-label="Limpar campos">Limpar</button>
+          </div>
+        </div>
+        
+        <hr>
+
+        <div class="form-group">
+          <label>Armazenamento e Backup</label>
+          <div class="btn-group">
+            <button id="exportBtn" class="btn-secondary" aria-label="Exportar cofre como JSON">Exportar Cofre</button>
+            <button id="importBtn" class="btn-secondary" aria-label="Importar cofre de arquivo JSON">Importar Cofre</button>
+            <input id="importFile" type="file" accept="application/json" style="display:none" aria-hidden="true">
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="form-group">
+          <label>Auditoria de Senhas</label>
+          <button id="auditBtn" class="btn-secondary" aria-label="Executar auditoria de senhas">Executar Auditoria</button>
+          <div id="auditResults" class="audit-results" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <!-- Coluna Direita: Lista de Entradas -->
+      <div class="card" role="region" aria-label="Lista de entradas">
+        <div class="form-group">
+          <label for="search">Suas Entradas</label>
+          <div class="input-with-button">
+            <input id="search" type="text" placeholder="Pesquisar..." aria-label="Pesquisar entradas">
+            <button id="clearAll" class="btn-danger" aria-label="Apagar todo o cofre">Apagar Tudo</button>
+          </div>
+        </div>
+        <div id="list" class="entry-list" role="list" aria-label="Lista de entradas do cofre">
+          <div class="entry-item" style="justify-content: center; color: var(--text-secondary);">Cofre bloqueado.</div>
+        </div>
+        <footer aria-label="Status do cofre">
+          <div id="status">Estado: Bloqueado</div>
+          <div id="lastBackupStatus" style="font-size: 0.75rem; margin-top: 0.5rem;"></div>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Template -->
+  <div id="modal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <p id="modal-text"></p>
+      <input id="modal-input" type="password" style="display:none;" aria-label="Entrada para modal">
+      <div id="modal-buttons" class="modal-buttons" role="group"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
