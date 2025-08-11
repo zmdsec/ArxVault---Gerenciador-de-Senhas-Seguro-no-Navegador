@@ -1,0 +1,27 @@
+[build]
+  # Diretório onde os arquivos gerados serão publicados
+  publish = "."
+  # Comando de build (opcional, já que é estático; pode ser usado para minificação futura)
+  command = "echo 'No build required'"
+
+[dev]
+  # Configuração para desenvolvimento local com Netlify CLI
+  command = "npm run dev" # Adicione um script "dev" no package.json se quiser
+  port = 8080
+  targetPort = 8080
+
+[[redirects]]
+  # Redireciona todas as rotas para index.html, suportando navegação SPA
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  # Configurações de cabeçalho para segurança
+  for = "/*" # Aplica a todos os arquivos
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'none';"
+    Referrer-Policy = "no-referrer"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=()"
